@@ -35,3 +35,22 @@ if(!empty($documentErr)) {
         'message' => 'New record inserted successfully!'
     ]);
 }
+
+$.ajax({
+    method: "POST",
+    url: "RegistartionForm.php",
+    data: formData,
+    contentType: false,
+    processData: false,
+    dataType: "json",  // important: expect JSON response
+    success: function(response) {
+        alert(response.message);
+        if(response.status === 'success') {
+            window.location.href = "index.php";
+        }
+        // else: just show the alert and stay on the page
+    },
+    error: function() {
+        alert("Something went wrong, please try again.");
+    }
+});
