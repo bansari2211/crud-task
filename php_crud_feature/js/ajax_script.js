@@ -36,21 +36,33 @@ if(!empty($documentErr)) {
     ]);
 }
 
-$.ajax({
-    method: "POST",
-    url: "RegistartionForm.php",
-    data: formData,
-    contentType: false,
-    processData: false,
-    dataType: "json",  // important: expect JSON response
-    success: function(response) {
-        alert(response.message);
-        if(response.status === 'success') {
-            window.location.href = "index.php";
-        }
-        // else: just show the alert and stay on the page
-    },
-    error: function() {
-        alert("Something went wrong, please try again.");
-    }
+$(document).ready(function(){
+    $('#myform').on('submit', function(e){
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        $.ajax({
+            url: 'RegistartionForm.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+                if(response.status === 'success'){
+                    alert(response.message);
+                    // Optionally reset form or redirect
+                    $('#myform')[0].reset();
+                    // location.href = 'index.php'; // if you want to redirect
+                } else if(response.status === 'warning'){
+                    alert(response.message);
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(){
+                alert('An error occurred while submitting the form.');
+            }
+        });
+    });
 });
