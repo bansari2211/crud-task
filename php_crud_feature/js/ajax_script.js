@@ -21,3 +21,17 @@ $(document).ready(function () {
         });
     });
 });
+
+
+if(!empty($documentErr)) {
+    $errorMsg = implode("\\n", $documentErr);
+    echo json_encode([
+        'status' => 'error',
+        'message' => "Some file is not inserted!\n{$errorMsg}"
+    ]);
+} else {
+    echo json_encode([
+        'status' => 'success',
+        'message' => 'New record inserted successfully!'
+    ]);
+}
