@@ -66,3 +66,30 @@ $(document).ready(function(){
         });
     });
 });
+
+
+
+$(document).on('click', '.delete-button', function() {
+    const id = $(this).data('id');
+    const row = $(this).closest('tr');
+
+    $.ajax({
+        url: 'deletedata.php',
+        type: 'GET', // or POST if you want
+        data: { id: id },
+        dataType: 'json',
+        success: function(response) {
+            if (response.status === 'success') {
+                alert(response.message);   // Show success alert
+                row.remove();              // Remove deleted row from the table
+            } else {
+                alert('Error: ' + response.message);
+            }
+        },
+        error: function() {
+            alert('Something went wrong while deleting the record.');
+        }
+    });
+});
+<a href="#" class="btn-delete" data-id="<?= $row['id'] ?>">Delete</a>
+
