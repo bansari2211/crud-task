@@ -1,0 +1,59 @@
+<?php
+/* =========  LOAD PHPMailer CLASSES  =========== */
+
+require __DIR__ . '/PHPMailer-6.10.0/src/PHPMailer.php';
+require __DIR__ . '/PHPMailer-6.10.0/src/SMTP.php';
+require __DIR__ . '/PHPMailer-6.10.0/src/Exception.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+/**
+ * Send a password-reset e-mail.
+ *
+ * @param string $email  User's e-mail address
+ * @param string $token  32-character reset token from your DB
+ * @return bool          true on success, false on failure
+ */
+function sendResetEmail(string $email, string $token): bool
+{
+    $mail = new PHPMailer(true);     // true = throw Exceptions you can catch
+
+    try {
+        /* ----------  SMTP SETTINGS YOU *MUST* CHECK  --------- */
+        $mail->isSMTP();                               // always: use SMTP, not mail()
+        $mail->Host       = 'smtp.gmail.com';          // ① change if not using Gmail
+        $mail->SMTPAuth   = true;                      // keep true
+        $mail->Username   = 'bansari.parmar@iqinfinite.in';    // ② your full sender address
+        $mail->Password   = 'ami@2211';       // ③ Gmail **App Password**
+        $mail->SMTPSecure = 'tls';                     // 'ssl' (465) or 'tls' (587) depending on host
+        $mail->Port       = 587;                       // 465 for SSL, 587 for TLS
+
+
+        $mail->setFrom('bansari.parmar@iqinfinite.in', 'ami@2211');   // ④
+        $mail->addAddress($email);                                  // recipient
+        $mail->addReplyTo('no-reply@your-site.com');
+
+        /* ----------  MESSAGE BODY  --------------------------- */
+        $mail->isHTML(true);
+        $mail->Subject = 'Reset your password';
+        $resetLink = 'https://example.com/forgot-password/reset_password.php?token='
+                     . urlencode($token);   // ⑤ consider HTTPS & urlencode()
+        $mail->Body    = "Hi there,<br><br>"
+                       . "Click the link below to reset your password (valid for 1 hour):<br><br>"
+                       . "<a href=\"$resetLink\">Reset Password</a><br><br>"
+                       . "If you did not request this, please ignore this email.";
+
+        $mail->AltBody = "Reset link: $resetLink";
+
+        /* ----------  SEND  ----------------------------------- */
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        echo 'Mailer error: ' . $mail->ErrorInfo;
+    // or for debugging:
+    echo 'Mailer exception message: ' . $e->getMessage();
+    return false;
+    }
+}
